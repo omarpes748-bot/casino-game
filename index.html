@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>كازينو</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#c98a12">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="كازينو">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --gold-1:#f5c518;
+    --gold-2:#e6a817;
+    --gold-3:#c98a12;
+    --card-bg:#eeeeee;
+    --card-bg-2:#e2e2e2;
+    --orange:#e08a1e;
+    --orange-dark:#c9740f;
+    --blue:#1f6fd6;
+    --blue-dark:#175bb0;
+    --green:#2ea043;
+    --green-dark:#22862f;
+    --red:#d9342b;
+    --red-dark:#b8281f;
+    --ink:#231a08;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Cairo', Tahoma, sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(circle at 50% -10%, rgba(255,255,255,0.35), rgba(255,255,255,0) 45%),
+      linear-gradient(180deg, var(--gold-1) 0%, var(--gold-2) 45%, var(--gold-3) 100%);
+    min-height:100vh;
+    padding:20px 16px 60px;
+  }
+  .wrap{max-width:640px;margin:0 auto;}
+  h1{
+    text-align:center;
+    font-size:32px;
+    font-weight:800;
+    margin:4px 0 18px;
+    color:#3a2600;
+    text-shadow:0 1px 0 rgba(255,255,255,0.4);
+    letter-spacing:1px;
+  }
+  .card{
+    background:var(--card-bg);
+    border-radius:18px;
+    padding:22px 20px;
+    box-shadow:0 4px 14px rgba(0,0,0,0.18);
+    margin-bottom:16px;
+  }
+  .question-label{
+    font-weight:700;
+    font-size:18px;
+    text-align:right;
+    margin-bottom:10px;
+    color:#333;
+  }
+  .question-text{
+    font-size:22px;
+    font-weight:700;
+    text-align:right;
+    line-height:1.6;
+    min-height:60px;
+    color:#111;
+  }
+  .answer-box{
+    margin-top:14px;
+    padding-top:14px;
+    border-top:2px dashed #bbb;
+    font-size:19px;
+    font-weight:700;
+    text-align:right;
+    color:var(--green-dark);
+  }
+  .empty-hint{
+    text-align:center;
+    color:#777;
+    font-size:17px;
+    padding:10px 0;
+  }
+  .btn-row{
+    display:flex;
+    gap:12px;
+    margin-bottom:16px;
+  }
+  .btn{
+    flex:1;
+    border:none;
+    border-radius:14px;
+    padding:18px 10px;
+    font-family:inherit;
+    font-size:18px;
+    font-weight:700;
+    color:#fff;
+    cursor:pointer;
+    box-shadow:0 3px 8px rgba(0,0,0,0.2);
+    transition:transform .08s ease, filter .15s ease;
+  }
+  .btn:active{transform:translateY(2px);filter:brightness(0.95);}
+  .btn:disabled{opacity:.5;cursor:not-allowed;}
+  .btn-orange{background:linear-gradient(180deg,var(--orange),var(--orange-dark));}
+  .btn-blue{background:linear-gradient(180deg,var(--blue),var(--blue-dark));}
+  .btn-green{background:linear-gradient(180deg,var(--green),var(--green-dark));}
+  .btn-red{background:linear-gradient(180deg,var(--red),var(--red-dark));}
+  .section-title{
+    font-size:20px;
+    font-weight:800;
+    margin:26px 4px 10px;
+    color:#3a2600;
+  }
+  /* players */
+  .player-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:var(--card-bg-2);
+    border-radius:14px;
+    padding:10px 12px;
+    margin-bottom:10px;
+  }
+  .player-name{
+    flex:1;
+    font-weight:700;
+    font-size:17px;
+  }
+  .score-pill{
+    min-width:42px;
+    text-align:center;
+    font-weight:800;
+    font-size:18px;
+    background:#fff;
+    border-radius:10px;
+    padding:6px 8px;
+  }
+  .round-btn{
+    width:38px;
+    height:38px;
+    border-radius:50%;
+    border:none;
+    font-size:20px;
+    font-weight:800;
+    color:#fff;
+    cursor:pointer;
+    flex-shrink:0;
+  }
+  .plus{background:var(--green);}
+  .minus{background:var(--red);}
+  .remove-x{
+    background:none;
+    border:none;
+    color:#999;
+    font-size:18px;
+    cursor:pointer;
+    padding:4px 6px;
+  }
+  .add-player-row{display:flex;gap:8px;margin-bottom:6px;}
+  input[type=text], textarea{
+    font-family:inherit;
+    font-size:16px;
+    padding:12px;
+    border-radius:10px;
+    border:1px solid #ccc;
+    flex:1;
+    background:#fff;
+    text-align:right;
+  }
+  textarea{resize:vertical;min-height:44px;}
+  .hint-small{
+    text-align:center;
+    font-size:13px;
+    color:#7a5c00;
+    margin:-4px 0 14px;
+  }
+  /* question bank */
+  .qbank-form{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    margin-bottom:14px;
+  }
+  .qbank-item{
+    background:var(--card-bg-2);
+    border-radius:12px;
+    padding:10px 12px;
+    margin-bottom:8px;
+  }
+  .qbank-item .q{font-weight:700;font-size:15px;}
+  .qbank-item .a{font-size:14px;color:#2e7d32;margin-top:4px;}
+  .qbank-item .row{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;}
+  .count-badge{
+    display:inline-block;
+    background:#3a2600;
+    color:#fff;
+    font-size:13px;
+    padding:2px 10px;
+    border-radius:20px;
+    margin-right:6px;
+  }
+  .loading{text-align:center;padding:30px;color:#555;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>كازينو</h1>
+
+  <div id="loading" class="loading">جاري تحميل البيانات...</div>
+
+  <div id="app" style="display:none;">
+
+    <!-- Question card -->
+    <div class="card">
+      <div class="question-label">السؤال:</div>
+      <div class="question-text" id="questionText">اضغط "سؤال جديد" للبدء</div>
+      <div class="answer-box" id="answerBox" style="display:none;"></div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-orange" id="showAnswerBtn">إظهار الإجابة</button>
+      <button class="btn btn-blue" id="nextQBtn">سؤال جديد</button>
+    </div>
+    <div class="hint-small" id="questionsCountHint"></div>
+
+    <!-- Players -->
+    <div class="section-title">اللاعبين</div>
+    <div class="card">
+      <div class="add-player-row">
+        <input type="text" id="playerNameInput" placeholder="اسم اللاعب">
+        <button class="btn btn-green" style="flex:0 0 auto;padding:12px 18px;" id="addPlayerBtn">إضافة</button>
+      </div>
+      <div class="hint-small" id="playerLimitHint">أقصى عدد للاعبين: 10</div>
+      <div id="playersList"></div>
+      <div class="empty-hint" id="noPlayersHint">لا يوجد لاعبين بعد</div>
+    </div>
+
+    <!-- Question bank management -->
+    <div class="section-title">إدارة الأسئلة <span class="count-badge" id="qCountBadge">0</span></div>
+    <div class="card">
+      <div class="qbank-form">
+        <textarea id="newQuestionInput" placeholder="اكتب السؤال هنا"></textarea>
+        <textarea id="newAnswerInput" placeholder="اكتب الإجابة هنا"></textarea>
+        <button class="btn btn-orange" id="saveQuestionBtn">حفظ السؤال</button>
+      </div>
+      <div id="qbankList"></div>
+      <div class="empty-hint" id="noQuestionsHint">لسه مفيش أسئلة، ضيف أول سؤال</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+let questions = [];
+let players = [];
+let usedIndices = [];
+let currentQ = null;
+let answerShown = false;
+
+const STORAGE_KEY = 'casino_questions';
+
+async function loadQuestions(){
+  try{
+    const res = await window.storage.get(STORAGE_KEY, false);
+    questions = res ? JSON.parse(res.value) : [];
+  }catch(e){
+    questions = [];
+  }
+}
+
+async function saveQuestions(){
+  try{
+    await window.storage.set(STORAGE_KEY, JSON.stringify(questions), false);
+  }catch(e){
+    console.error('save failed', e);
+  }
+}
+
+function renderQBank(){
+  const list = document.getElementById('qbankList');
+  const noHint = document.getElementById('noQuestionsHint');
+  document.getElementById('qCountBadge').textContent = questions.length;
+  document.getElementById('questionsCountHint').textContent =
+    questions.length ? `متبقي ${questions.length - usedIndices.length} من ${questions.length} سؤال في هذه الجولة` : 'ضيف أسئلة الأول من قسم "إدارة الأسئلة"';
+  list.innerHTML = '';
+  if(questions.length === 0){
+    noHint.style.display = 'block';
+    return;
+  }
+  noHint.style.display = 'none';
+  questions.forEach((item, idx)=>{
+    const div = document.createElement('div');
+    div.className = 'qbank-item';
+    div.innerHTML = `
+      <div class="row">
+        <div>
+          <div class="q">${escapeHtml(item.q)}</div>
+          <div class="a">الإجابة: ${escapeHtml(item.a)}</div>
+        </div>
+        <button class="remove-x" data-idx="${idx}">✕</button>
+      </div>
+    `;
+    list.appendChild(div);
+  });
+  list.querySelectorAll('.remove-x').forEach(btn=>{
+    btn.addEventListener('click', async (e)=>{
+      const idx = parseInt(e.target.getAttribute('data-idx'));
+      questions.splice(idx,1);
+      usedIndices = [];
+      await saveQuestions();
+      renderQBank();
+    });
+  });
+}
+
+function escapeHtml(str){
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+function pickRandomQuestion(){
+  if(questions.length === 0){
+    document.getElementById('questionText').textContent = 'مفيش أسئلة محفوظة. ضيف أسئلة الأول من تحت.';
+    document.getElementById('answerBox').style.display = 'none';
+    currentQ = null;
+    return;
+  }
+  if(usedIndices.length >= questions.length){
+    usedIndices = [];
+  }
+  let idx;
+  do{
+    idx = Math.floor(Math.random()*questions.length);
+  }while(usedIndices.includes(idx) && usedIndices.length < questions.length);
+  usedIndices.push(idx);
+  currentQ = questions[idx];
+  answerShown = false;
+  document.getElementById('questionText').textContent = currentQ.q;
+  document.getElementById('answerBox').style.display = 'none';
+  document.getElementById('answerBox').textContent = '';
+  renderQBank();
+}
+
+function toggleAnswer(){
+  if(!currentQ) return;
+  answerShown = !answerShown;
+  const box = document.getElementById('answerBox');
+  if(answerShown){
+    box.textContent = 'الإجابة: ' + currentQ.a;
+    box.style.display = 'block';
+  }else{
+    box.style.display = 'none';
+  }
+}
+
+function renderPlayers(){
+  const list = document.getElementById('playersList');
+  const noHint = document.getElementById('noPlayersHint');
+  list.innerHTML = '';
+  if(players.length === 0){
+    noHint.style.display = 'block';
+  }else{
+    noHint.style.display = 'none';
+  }
+  players.forEach((p, idx)=>{
+    const row = document.createElement('div');
+    row.className = 'player-row';
+    row.innerHTML = `
+      <button class="round-btn minus" data-idx="${idx}" data-op="minus">−</button>
+      <div class="score-pill">${p.score}</div>
+      <div class="player-name">${escapeHtml(p.name)}</div>
+      <button class="round-btn plus" data-idx="${idx}" data-op="plus">+</button>
+      <button class="remove-x" data-idx="${idx}" data-op="remove">✕</button>
+    `;
+    list.appendChild(row);
+  });
+  list.querySelectorAll('button').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      const idx = parseInt(e.currentTarget.getAttribute('data-idx'));
+      const op = e.currentTarget.getAttribute('data-op');
+      if(op === 'plus') players[idx].score += 1;
+      if(op === 'minus') players[idx].score -= 1;
+      if(op === 'remove') players.splice(idx,1);
+      renderPlayers();
+      updateAddPlayerState();
+    });
+  });
+}
+
+function updateAddPlayerState(){
+  const btn = document.getElementById('addPlayerBtn');
+  const input = document.getElementById('playerNameInput');
+  const full = players.length >= 10;
+  btn.disabled = full;
+  input.disabled = full;
+  document.getElementById('playerLimitHint').textContent =
+    full ? 'وصلت لأقصى عدد لاعبين (10)' : `عدد اللاعبين: ${players.length} / 10`;
+}
+
+async function init(){
+  await loadQuestions();
+  renderQBank();
+  renderPlayers();
+  updateAddPlayerState();
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+}
+
+document.getElementById('nextQBtn').addEventListener('click', pickRandomQuestion);
+document.getElementById('showAnswerBtn').addEventListener('click', toggleAnswer);
+
+document.getElementById('addPlayerBtn').addEventListener('click', ()=>{
+  const input = document.getElementById('playerNameInput');
+  const name = input.value.trim();
+  if(!name || players.length >= 10) return;
+  players.push({name, score:0});
+  input.value = '';
+  renderPlayers();
+  updateAddPlayerState();
+});
+document.getElementById('playerNameInput').addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter') document.getElementById('addPlayerBtn').click();
+});
+
+document.getElementById('saveQuestionBtn').addEventListener('click', async ()=>{
+  const qInput = document.getElementById('newQuestionInput');
+  const aInput = document.getElementById('newAnswerInput');
+  const q = qInput.value.trim();
+  const a = aInput.value.trim();
+  if(!q || !a) return;
+  questions.push({q, a});
+  qInput.value = '';
+  aInput.value = '';
+  await saveQuestions();
+  renderQBank();
+});
+
+init();
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
